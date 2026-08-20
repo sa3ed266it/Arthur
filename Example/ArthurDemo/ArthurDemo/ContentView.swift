@@ -86,10 +86,15 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                Section("Loading & Update") {
+                Section("Content Updates") {
                     Button("Upload → Success") { uploadSuccess() }
                     Button("Upload → Error + Retry") { uploadError() }
+                    Button("Loading → Warning") { loadingToWarning() }
                     Button("Multiple Updates") { multipleUpdates() }
+                    Button("Short → Long Content") { shortToLong() }
+                    Button("Long → Short Content") { longToShort() }
+                    Button("Action Added") { actionAdded() }
+                    Button("Action Removed") { actionRemoved() }
                     Button("Loading → Persistent Error") { persistentErrorUpdate() }
                     Button("Stale Handle Test") { staleHandleTest() }
                     Text("Update status: \(updateStatus)")
@@ -229,6 +234,17 @@ struct ContentView: View {
         }
     }
 
+    private func loadingToWarning() {
+        updateStatus = "Checking"
+        let handle = Arthur.loading("Checking connection...", subtitle: "One moment", onDismiss: recordDismissal)
+        Task { @MainActor in
+            do { try await Task.sleep(for: .milliseconds(500)) } catch { return }
+            if Arthur.update(handle, to: .warning("Connection is slow", subtitle: "Some data may be outdated.")) {
+                updateStatus = "Warning"
+            }
+        }
+    }
+
     private func multipleUpdates() {
         updateStatus = "Starting"
         let handle = Arthur.loading("Starting...", onDismiss: recordDismissal)
@@ -242,6 +258,63 @@ struct ContentView: View {
             do { try await Task.sleep(for: .milliseconds(250)) } catch { return }
             if Arthur.update(handle, to: .success("Done")) {
                 updateStatus = "Done"
+            }
+        }
+    }
+
+    private func shortToLong() {
+        let handle = Arthur.loading("Saving...", onDismiss: recordDismissal)
+        Task { @MainActor in
+            do { try await Task.sleep(for: .milliseconds(500)) } catch { return }
+            if Arthur.update(handle, to: .success(
+                "Saved successfully",
+                subtitle: "Your changes are now synchronized across all of your devices."
+            )) {
+                updateStatus = "Long content"
+            }
+        }
+    }
+
+    private func longToShort() {
+        let handle = Arthur.loading(
+            "Saving your changes",
+            subtitle: "This may take a moment while we sync everything.",
+            onDismiss: recordDismissal
+        )
+        Task { @MainActor in
+            do { try await Task.sleep(for: .milliseconds(500)) } catch { return }
+            if Arthur.update(handle, to: .success("Saved")) {
+                updateStatus = "Short content"
+            }
+        }
+    }
+
+    private func actionAdded() {
+        let handle = Arthur.loading("Uploading...", onDismiss: recordDismissal)
+        Task { @MainActor in
+            do { try await Task.sleep(for: .milliseconds(500)) } catch { return }
+            if Arthur.update(handle, to: .success(
+                "Uploaded",
+                subtitle: "Ready to view",
+                action: ArthurAction("Open") { lastAction = "Open" }
+            )) {
+                updateStatus = "Action added"
+            }
+        }
+    }
+
+    private func actionRemoved() {
+        let handle = Arthur.loading("Uploading...", onDismiss: recordDismissal)
+        Task { @MainActor in
+            do { try await Task.sleep(for: .milliseconds(500)) } catch { return }
+            guard Arthur.update(handle, to: .success(
+                "Uploaded",
+                subtitle: "Ready to view",
+                action: ArthurAction("Open") { lastAction = "Open" }
+            )) else { return }
+            do { try await Task.sleep(for: .milliseconds(500)) } catch { return }
+            if Arthur.update(handle, to: .success("Uploaded", subtitle: "Ready to view")) {
+                updateStatus = "Action removed"
             }
         }
     }

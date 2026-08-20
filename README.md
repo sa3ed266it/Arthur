@@ -103,7 +103,7 @@ Arthur.success("Saved", onDismiss: { reason in
 
 ## Loading and in-place updates
 
-Loading returns a handle that can update the same mounted toast without replacement:
+Loading returns a handle that can update the same mounted toast without replacement. Visible content changes use a subtle in-place transition while the surface, identity, and lifecycle remain unchanged:
 
 ```swift
 let toast = Arthur.loading("Uploading...")

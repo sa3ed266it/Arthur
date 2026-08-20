@@ -96,7 +96,7 @@ Update the same toast in place:
 Arthur.update(toast, to: .success("Uploaded"))
 ```
 
-`Arthur.update` returns `true` when the handle is current and the update commits, or `false` for a stale/dismissed handle. Updates preserve the toast UUID, do not emit `.replaced`, do not call `onDismiss`, and do not replay the entrance or exit presentation animation. The updated duration starts when the update commits; non-loading updates default to the configured duration and loading updates default to `.untilDismissed`.
+`Arthur.update` returns `true` when the handle is current and the update commits, or `false` for a stale/dismissed handle. Updates preserve the toast UUID, do not emit `.replaced`, do not call `onDismiss`, and do not replay the entrance or exit presentation animation. Visible content changes transition subtly in place while the same surface and lifecycle remain mounted. The updated duration starts when the update commits; non-loading updates default to the configured duration and loading updates default to `.untilDismissed`.
 
 Updates can be repeated and can change style, title, subtitle, duration, and action:
 

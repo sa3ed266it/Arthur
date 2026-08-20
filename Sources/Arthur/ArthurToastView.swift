@@ -8,10 +8,14 @@ struct ArthurToastView: View {
     let dismiss: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var displayedToast: ArthurToast?
+    @State private var outgoingContent: ArthurToast?
     @State private var presentationPhase: PresentationPhase = .hidden
     @State private var isFloating = false
     @State private var dragOffset: CGFloat = 0
     @State private var hasPausedTimerForDrag = false
+    @State private var incomingContentVisible = true
+    @State private var outgoingContentVisible = false
+    @State private var contentTransitionGeneration = 0
 
     private enum PresentationPhase {
         case hidden
@@ -21,6 +25,10 @@ struct ArthurToastView: View {
 
     private var exitDuration: UInt64 {
         reduceMotion ? 180_000_000 : 310_000_000
+    }
+
+    private var contentTransitionDuration: UInt64 {
+        reduceMotion ? 160_000_000 : 210_000_000
     }
 
     private var cardScale: CGFloat {
@@ -61,7 +69,7 @@ struct ArthurToastView: View {
     var body: some View {
         Group {
             if let displayedToast {
-                toastContent(displayedToast)
+                toastCard(displayedToast)
                     .scaleEffect(cardScale * dragScale)
                     .offset(y: cardOffset + dragOffset)
                     .offset(y: isFloating && presentationPhase == .visible ? 1.5 : 0)
@@ -74,8 +82,34 @@ struct ArthurToastView: View {
         }
         .onChange(of: toast) { _, updatedToast in
             guard let updatedToast, displayedToast?.id == updatedToast.id else { return }
-            displayedToast = updatedToast
+            guard presentationPhase == .visible else {
+                displayedToast = updatedToast
+                return
+            }
+            startContentUpdate(to: updatedToast)
         }
+    }
+
+    private func toastCard(_ toast: ArthurToast) -> some View {
+        toastContent(toast)
+            .opacity(incomingContentVisible ? 1 : 0)
+            .offset(y: incomingContentVisible || reduceMotion ? 0 : 5)
+            .blur(radius: incomingContentVisible || reduceMotion ? 0 : 1.8)
+            .overlay {
+                if let outgoingContent {
+                    toastContent(outgoingContent)
+                        .opacity(outgoingContentVisible ? 1 : 0)
+                        .offset(y: reduceMotion || outgoingContentVisible ? 0 : -5)
+                        .blur(radius: outgoingContentVisible ? 0 : (reduceMotion ? 0 : 1.8))
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                }
+            }
+            .arthurToastSurface(surfaceStyle)
+            .animation(
+                reduceMotion ? .easeInOut(duration: 0.16) : .easeInOut(duration: 0.21),
+                value: contentTransitionGeneration
+            )
     }
 
     @ViewBuilder
@@ -125,7 +159,6 @@ struct ArthurToastView: View {
         .padding(.vertical, 11)
         .frame(minHeight: 56)
         .frame(maxWidth: 390, alignment: .leading)
-        .arthurToastSurface(surfaceStyle)
         .modifier(ArthurToastAccessibilityModifier(
             hasAction: toast.actionTitle != nil,
             announcement: toast.accessibilityAnnouncement
@@ -201,6 +234,7 @@ struct ArthurToastView: View {
             }
 
             if displayedToast != nil {
+                invalidateContentTransition()
                 isFloating = false
                 withAnimation(reduceMotion ? .easeInOut(duration: 0.18) : .easeInOut(duration: 0.31)) {
                     presentationPhase = .disappearing
@@ -211,6 +245,9 @@ struct ArthurToastView: View {
 
             guard Arthur.coordinator.currentToast?.id == incomingToast.id else { return }
             displayedToast = incomingToast
+            incomingContentVisible = true
+            outgoingContentVisible = false
+            outgoingContent = nil
             presentationPhase = .hidden
             isFloating = false
             dragOffset = 0
@@ -233,6 +270,7 @@ struct ArthurToastView: View {
             }
         } else if displayedToast != nil {
             let exitingID = displayedToast?.id
+            invalidateContentTransition()
             isFloating = false
             withAnimation(reduceMotion ? .easeInOut(duration: 0.18) : .easeInOut(duration: 0.31)) {
                 presentationPhase = .disappearing
@@ -255,6 +293,75 @@ struct ArthurToastView: View {
             return
         }
     }
+
+    private func startContentUpdate(to updatedToast: ArthurToast) {
+        guard let previousToast = displayedToast,
+              previousToast.id == updatedToast.id,
+              contentSignature(previousToast) != contentSignature(updatedToast)
+        else {
+            displayedToast = updatedToast
+            return
+        }
+
+        contentTransitionGeneration &+= 1
+        let generation = contentTransitionGeneration
+        outgoingContent = previousToast
+        outgoingContentVisible = true
+        incomingContentVisible = false
+        displayedToast = updatedToast
+
+        Task { @MainActor in
+            await Task.yield()
+            guard contentTransitionGeneration == generation,
+                  presentationPhase == .visible,
+                  displayedToast?.id == updatedToast.id
+            else { return }
+
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.14) : .easeOut(duration: 0.10)) {
+                outgoingContentVisible = false
+            }
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.16) : .easeIn(duration: 0.16)) {
+                incomingContentVisible = true
+            }
+
+            do {
+                try await Task.sleep(nanoseconds: contentTransitionDuration)
+            } catch {
+                return
+            }
+
+            guard contentTransitionGeneration == generation,
+                  presentationPhase == .visible,
+                  displayedToast?.id == updatedToast.id
+            else { return }
+            outgoingContent = nil
+        }
+    }
+
+    private func invalidateContentTransition() {
+        contentTransitionGeneration &+= 1
+        outgoingContent = nil
+        outgoingContentVisible = false
+        incomingContentVisible = true
+    }
+
+    private func contentSignature(_ toast: ArthurToast) -> ContentSignature {
+        ContentSignature(
+            isLoading: toast.isLoading,
+            title: toast.title,
+            subtitle: toast.subtitle,
+            style: toast.style,
+            actionTitle: toast.actionTitle
+        )
+    }
+}
+
+private struct ContentSignature: Equatable {
+    let isLoading: Bool
+    let title: String
+    let subtitle: String?
+    let style: ArthurStyle
+    let actionTitle: String?
 }
 
 private struct ArthurToastAccessibilityModifier: ViewModifier {
