@@ -1,0 +1,97 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* Arthur in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000009 /* Arthur */; };
+		A10000000000000000000002 /* ArthurDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* ArthurDemoApp.swift */; };
+		A10000000000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005 /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10000000000000000000004 /* ArthurDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArthurDemoApp.swift; sourceTree = "<group>"; };
+		A10000000000000000000005 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A10000000000000000000006 /* ArthurDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArthurDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000000000000000000010 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (A10000000000000000000001 /* Arthur in Frameworks */);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10000000000000000000011 = {isa = PBXGroup; children = (A10000000000000000000012 /* ArthurDemo */, A10000000000000000000013 /* Products */); sourceTree = "<group>"; };
+		A10000000000000000000012 /* ArthurDemo */ = {isa = PBXGroup; children = (A10000000000000000000004 /* ArthurDemoApp.swift */, A10000000000000000000005 /* ContentView.swift */); path = ArthurDemo; sourceTree = "<group>"; };
+		A10000000000000000000013 /* Products */ = {isa = PBXGroup; children = (A10000000000000000000006 /* ArthurDemo.app */); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10000000000000000000014 /* ArthurDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000020 /* Build configuration list for PBXNativeTarget "ArthurDemo" */;
+			buildPhases = (A10000000000000000000015 /* Sources */, A10000000000000000000010 /* Frameworks */, A10000000000000000000016 /* Resources */);
+			dependencies = ();
+			name = ArthurDemo;
+			packageProductDependencies = (A10000000000000000000009 /* Arthur */);
+			productName = ArthurDemo;
+			productReference = A10000000000000000000006 /* ArthurDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000000000000000000017 /* Project object */ = {
+			isa = PBXProject;
+			attributes = { LastUpgradeCheck = 1600; TargetAttributes = { A10000000000000000000014 = { CreatedOnToolsVersion = 16.0; }; }; };
+			buildConfigurationList = A10000000000000000000021 /* Build configuration list for PBXProject "ArthurDemo" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = A10000000000000000000011;
+			packageReferences = (A10000000000000000000008 /* Arthur */);
+			productRefGroup = A10000000000000000000013 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (A10000000000000000000014 /* ArthurDemo */);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000000000000000000016 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000015 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A10000000000000000000002 /* ArthurDemoApp.swift in Sources */, A10000000000000000000003 /* ContentView.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A10000000000000000000022 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; ASSETCATALOG_COMPILER_APPICON_NAME = ""; CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; DEBUG_INFORMATION_FORMAT = dwarf; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = ArthurDemo; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities"; INFOPLIST_KEY_UILaunchScreen_Generation = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.arthur.demo; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
+		A10000000000000000000023 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; ASSETCATALOG_COMPILER_APPICON_NAME = ""; CLANG_ENABLE_MODULES = YES; CURRENT_PROJECT_VERSION = 1; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = ArthurDemo; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities"; INFOPLIST_KEY_UILaunchScreen_Generation = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.arthur.demo; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
+		A10000000000000000000024 /* Debug target */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_IDENTITY = "-"; DEVELOPMENT_TEAM = ""; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.arthur.demo; SWIFT_EMIT_LOC_STRINGS = YES; }; name = Debug; };
+		A10000000000000000000025 /* Release target */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_IDENTITY = "-"; DEVELOPMENT_TEAM = ""; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.arthur.demo; SWIFT_EMIT_LOC_STRINGS = YES; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000000000000000000020 /* Build configuration list for PBXNativeTarget "ArthurDemo" */ = {isa = XCConfigurationList; buildConfigurations = (A10000000000000000000024 /* Debug target */, A10000000000000000000025 /* Release target */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A10000000000000000000021 /* Build configuration list for PBXProject "ArthurDemo" */ = {isa = XCConfigurationList; buildConfigurations = (A10000000000000000000022 /* Debug */, A10000000000000000000023 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A10000000000000000000008 /* Arthur */ = {isa = XCLocalSwiftPackageReference; relativePath = ../..; };
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000009 /* Arthur */ = {isa = XCSwiftPackageProductDependency; package = A10000000000000000000008 /* Arthur */; productName = Arthur; };
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A10000000000000000000017 /* Project object */;
+}
