@@ -22,8 +22,31 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section("Immediate Presentation From Idle") {
+                    Button("Immediate Presentation From Idle") {
+                        Arthur.success("Immediate test", duration: .long)
+                    }
+                    Button("Immediate Action Test") {
+                        Arthur.success(
+                            "Action test",
+                            duration: .long,
+                            action: ArthurAction("Undo") {}
+                        )
+                    }
+                    Text("Wait without touching the screen after each tap.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section("Toast Styles") {
                     Button("Success") { Arthur.success("Saved", subtitle: "Your changes were saved.") }
+                    Button("Success With Red Trash Override") {
+                        Arthur.success(
+                            "Deleted successfully",
+                            systemImage: "trash.fill",
+                            tint: .red
+                        )
+                    }
                     Button("Error") { Arthur.error("Something went wrong", subtitle: "Please try again.") }
                     Button("Warning") { Arthur.warning("Check your connection", subtitle: "Some data may be outdated.") }
                     Button("Info") { Arthur.info("Updated", subtitle: "New information is available.") }

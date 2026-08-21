@@ -36,6 +36,8 @@ final class ArthurCoordinator: ObservableObject {
         title: String,
         subtitle: String?,
         style: ArthurStyle,
+        systemImageOverride: String? = nil,
+        tintOverride: Color? = nil,
         duration: ArthurDuration?,
         action: ArthurAction?,
         isLoading: Bool = false,
@@ -51,7 +53,9 @@ final class ArthurCoordinator: ObservableObject {
             subtitle: subtitle,
             style: style,
             duration: duration ?? configuration.defaultDuration,
-            accessibilityAnnouncement: accessibilityAnnouncement
+            accessibilityAnnouncement: accessibilityAnnouncement,
+            systemImageOverride: systemImageOverride,
+            tintOverride: tintOverride
         )
         toast.actionTitle = action?.title
         toast.isLoading = isLoading
@@ -109,13 +113,19 @@ final class ArthurCoordinator: ObservableObject {
         let wasLoading = currentToast.isLoading
         let dragIsActive = activeDragToastIDs.contains(handle.id)
         let updatedStyle: ArthurStyle
+        let updatedSystemImageOverride: String?
+        let updatedTintOverride: Color?
         let updatedIsLoading: Bool
         switch update.kind {
         case .loading:
             updatedStyle = .info
+            updatedSystemImageOverride = update.systemImageOverride
+            updatedTintOverride = update.tintOverride
             updatedIsLoading = true
-        case let .style(style):
+        case let .style(style, systemImageOverride, tintOverride):
             updatedStyle = style
+            updatedSystemImageOverride = systemImageOverride
+            updatedTintOverride = tintOverride
             updatedIsLoading = false
         }
 
@@ -126,7 +136,9 @@ final class ArthurCoordinator: ObservableObject {
             subtitle: update.subtitle,
             style: updatedStyle,
             duration: update.duration ?? (updatedIsLoading ? .untilDismissed : configuration.defaultDuration),
-            accessibilityAnnouncement: nil
+            accessibilityAnnouncement: nil,
+            systemImageOverride: updatedSystemImageOverride,
+            tintOverride: updatedTintOverride
         )
         updatedToast.actionTitle = update.action?.title
         updatedToast.isLoading = updatedIsLoading

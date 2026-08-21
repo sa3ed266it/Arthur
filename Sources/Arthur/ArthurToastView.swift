@@ -67,7 +67,7 @@ struct ArthurToastView: View {
     }
 
     var body: some View {
-        Group {
+        ZStack {
             if let displayedToast {
                 toastCard(displayedToast)
                     .scaleEffect(cardScale * dragScale)
@@ -120,9 +120,9 @@ struct ArthurToastView: View {
                     .controlSize(.small)
                     .accessibilityHidden(true)
             } else {
-                Image(systemName: toast.style.systemImage)
+                Image(systemName: toast.systemImageOverride ?? toast.style.systemImage)
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(toast.style.tint)
+                    .foregroundStyle(toast.tintOverride ?? toast.style.tint)
                     .accessibilityHidden(true)
             }
 

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// A single notification presented by Arthur.
 public struct ArthurToast: Identifiable, Equatable {
@@ -10,6 +11,10 @@ public struct ArthurToast: Identifiable, Equatable {
     public let subtitle: String?
     /// Semantic or custom visual style.
     public let style: ArthurStyle
+    /// Optional SF Symbol override; semantic style remains unchanged.
+    public let systemImageOverride: String?
+    /// Optional tint override; semantic style remains unchanged.
+    public let tintOverride: Color?
     /// Auto-dismiss policy for this toast.
     public let duration: ArthurDuration
     /// VoiceOver label; generated from title and subtitle when omitted.
@@ -27,12 +32,16 @@ public struct ArthurToast: Identifiable, Equatable {
         subtitle: String? = nil,
         style: ArthurStyle = .info,
         duration: ArthurDuration = .normal,
-        accessibilityAnnouncement: String? = nil
+        accessibilityAnnouncement: String? = nil,
+        systemImageOverride: String? = nil,
+        tintOverride: Color? = nil
     ) {
         self.id = id
         self.title = title
         self.subtitle = subtitle
         self.style = style
+        self.systemImageOverride = systemImageOverride
+        self.tintOverride = tintOverride
         self.duration = duration
         self.actionTitle = nil
         self.isLoading = false

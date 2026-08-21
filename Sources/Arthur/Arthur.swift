@@ -21,9 +21,11 @@ public enum Arthur {
         duration: ArthurDuration? = nil,
         action: ArthurAction? = nil,
         accessibilityAnnouncement: String? = nil,
-        onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil
+        onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil,
+        systemImage: String? = nil,
+        tint: Color? = nil
     ) {
-        _ = coordinator.show(title: title, subtitle: subtitle, style: style, duration: duration, action: action, accessibilityAnnouncement: accessibilityAnnouncement, onDismiss: onDismiss)
+        _ = coordinator.show(title: title, subtitle: subtitle, style: style, systemImageOverride: systemImage, tintOverride: tint, duration: duration, action: action, accessibilityAnnouncement: accessibilityAnnouncement, onDismiss: onDismiss)
     }
 
     /// Presents a loading toast and returns its lifecycle handle.
@@ -36,9 +38,11 @@ public enum Arthur {
         subtitle: String? = nil,
         duration: ArthurDuration = .untilDismissed,
         action: ArthurAction? = nil,
-        onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil
+        onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil,
+        systemImage: String? = nil,
+        tint: Color? = nil
     ) -> ArthurToastHandle {
-        coordinator.show(title: title, subtitle: subtitle, style: .info, duration: duration, action: action, isLoading: true, accessibilityAnnouncement: nil, onDismiss: onDismiss)
+        coordinator.show(title: title, subtitle: subtitle, style: .info, systemImageOverride: systemImage, tintOverride: tint, duration: duration, action: action, isLoading: true, accessibilityAnnouncement: nil, onDismiss: onDismiss)
     }
 
     /// Updates the current toast in place without replacing its identity.
@@ -51,23 +55,23 @@ public enum Arthur {
     }
 
     /// Presents a success toast using the green semantic style.
-    public static func success(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil) {
-        show(title: title, subtitle: subtitle, style: .success, duration: duration, action: action, onDismiss: onDismiss)
+    public static func success(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil, systemImage: String? = nil, tint: Color? = nil) {
+        show(title: title, subtitle: subtitle, style: .success, duration: duration, action: action, onDismiss: onDismiss, systemImage: systemImage, tint: tint)
     }
 
     /// Presents an error toast using the red semantic style.
-    public static func error(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil) {
-        show(title: title, subtitle: subtitle, style: .error, duration: duration, action: action, onDismiss: onDismiss)
+    public static func error(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil, systemImage: String? = nil, tint: Color? = nil) {
+        show(title: title, subtitle: subtitle, style: .error, duration: duration, action: action, onDismiss: onDismiss, systemImage: systemImage, tint: tint)
     }
 
     /// Presents a warning toast using the orange semantic style.
-    public static func warning(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil) {
-        show(title: title, subtitle: subtitle, style: .warning, duration: duration, action: action, onDismiss: onDismiss)
+    public static func warning(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil, systemImage: String? = nil, tint: Color? = nil) {
+        show(title: title, subtitle: subtitle, style: .warning, duration: duration, action: action, onDismiss: onDismiss, systemImage: systemImage, tint: tint)
     }
 
     /// Presents an informational toast using the blue semantic style.
-    public static func info(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil) {
-        show(title: title, subtitle: subtitle, style: .info, duration: duration, action: action, onDismiss: onDismiss)
+    public static func info(_ title: String, subtitle: String? = nil, duration: ArthurDuration? = nil, action: ArthurAction? = nil, onDismiss: (@MainActor (ArthurDismissReason) -> Void)? = nil, systemImage: String? = nil, tint: Color? = nil) {
+        show(title: title, subtitle: subtitle, style: .info, duration: duration, action: action, onDismiss: onDismiss, systemImage: systemImage, tint: tint)
     }
 
     /// Dismisses the currently visible toast, if any, reporting `.manual`.

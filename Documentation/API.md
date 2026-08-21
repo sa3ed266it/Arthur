@@ -2,7 +2,22 @@
 
 ## Installation and root setup
 
-Add the Arthur package, then import it:
+For a reproducible release dependency, use the public GitHub package and pin
+the exact `1.5.0` release in Xcode or `Package.swift`:
+
+```text
+https://github.com/sa3ed266it/Arthur
+```
+
+```swift
+.package(
+    url: "https://github.com/sa3ed266it/Arthur.git",
+    exact: "1.5.0"
+)
+```
+
+For local development, use Xcode's **File → Add Package Dependencies… → Add
+Local…** workflow. Then import the package:
 
 ```swift
 import Arthur
@@ -51,6 +66,20 @@ Arthur.success(
 Arthur.error("Something went wrong")
 Arthur.warning("Check your connection")
 Arthur.info("Updated")
+```
+
+Semantic presentation methods also accept optional `systemImage` and `tint`
+overrides. These change only the rendered visual metadata; haptics continue to
+derive from `ArthurStyle`:
+
+```swift
+Arthur.success(
+    "Entrata aggiunta",
+    subtitle: "150,00 € • Fondo attività",
+    systemImage: "arrow.down.circle.fill",
+    tint: .green,
+    duration: .long
+)
 ```
 
 `Arthur.show` supports the complete parameter set:
@@ -112,6 +141,10 @@ Arthur.update(
     )
 )
 ```
+
+`ArthurUpdate.success`, `.error`, `.warning`, and `.info` accept the same
+optional `systemImage` and `tint` overrides. Updates keep the same toast ID and
+semantic style while replacing only the visual metadata.
 
 An update with no action removes the previous action. The original lifecycle callback survives all updates and is delivered once only when the final toast is dismissed. An updated action still dismisses with `.action`, executes before `onDismiss(.action)`, and may present another toast safely. Loading uses the native SwiftUI `ProgressView`; determinate progress values are not part of this API.
 

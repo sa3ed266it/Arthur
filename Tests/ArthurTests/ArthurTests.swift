@@ -30,6 +30,44 @@ final class ArthurTests: XCTestCase {
         XCTAssertEqual(Arthur.coordinator.currentToast?.style, .success)
     }
 
+    func testDefaultSuccessUsesSemanticIconAndTint() {
+        Arthur.success("Saved")
+
+        XCTAssertNil(Arthur.coordinator.currentToast?.systemImageOverride)
+        XCTAssertNil(Arthur.coordinator.currentToast?.tintOverride)
+        XCTAssertEqual(Arthur.coordinator.currentToast?.style, .success)
+        XCTAssertEqual(Arthur.coordinator.currentToast?.style.systemImage, "checkmark.circle.fill")
+        XCTAssertEqual(Arthur.coordinator.currentToast?.style.tint, .green)
+    }
+
+    func testSemanticSuccessPreservesStyleWithVisualOverrides() {
+        Arthur.success("Income added", systemImage: "arrow.down.circle.fill", tint: .green)
+
+        XCTAssertEqual(Arthur.coordinator.currentToast?.style, .success)
+        XCTAssertEqual(Arthur.coordinator.currentToast?.systemImageOverride, "arrow.down.circle.fill")
+        XCTAssertEqual(Arthur.coordinator.currentToast?.tintOverride, .green)
+    }
+
+    func testLoadingToSuccessUpdateRetainsToastIdentityWithVisualOverrides() {
+        let handle = Arthur.loading("Saving...")
+        let originalID = Arthur.coordinator.currentToast?.id
+
+        XCTAssertTrue(Arthur.update(
+            handle,
+            to: .success(
+                "Saved",
+                systemImage: "arrow.uturn.backward.circle.fill",
+                tint: .green
+            )
+        ))
+
+        XCTAssertEqual(Arthur.coordinator.currentToast?.id, originalID)
+        XCTAssertEqual(Arthur.coordinator.currentToast?.style, .success)
+        XCTAssertEqual(Arthur.coordinator.currentToast?.systemImageOverride, "arrow.uturn.backward.circle.fill")
+        XCTAssertEqual(Arthur.coordinator.currentToast?.tintOverride, .green)
+        XCTAssertFalse(Arthur.coordinator.currentToast?.isLoading == true)
+    }
+
     func testErrorUsesErrorStyle() {
         Arthur.error("Failed")
         XCTAssertEqual(Arthur.coordinator.currentToast?.style, .error)

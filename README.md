@@ -20,7 +20,29 @@ Arthur is a small Apple-native SwiftUI toast library for iOS 17 and later.
 
 ## Installation
 
-Add the local package in Xcode with **File → Add Package Dependencies… → Add Local…**, then import it:
+### Remote Swift Package
+
+For reproducible app and release builds, add the public package in Xcode with
+**File → Add Package Dependencies…**, enter:
+
+```text
+https://github.com/sa3ed266it/Arthur
+```
+
+Select **Exact Version 1.5.0**. A `Package.swift` dependency can pin the same
+release explicitly:
+
+```swift
+.package(
+    url: "https://github.com/sa3ed266it/Arthur.git",
+    exact: "1.5.0"
+)
+```
+
+### Local Development
+
+For local library development, add the package in Xcode with
+**File → Add Package Dependencies… → Add Local…**, then import it:
 
 ```swift
 import Arthur
@@ -43,6 +65,21 @@ Arthur.error("Something went wrong", subtitle: "Please try again.")
 Arthur.warning("Check your connection")
 Arthur.info("Updated")
 ```
+
+Built-in semantic styles can use an optional SF Symbol and tint override without
+changing their semantic haptics:
+
+```swift
+Arthur.success(
+    "Entrata aggiunta",
+    subtitle: "150,00 € • Fondo attività",
+    systemImage: "arrow.down.circle.fill",
+    tint: .green,
+    duration: .long
+)
+```
+
+When no override is supplied, Arthur uses the style's existing icon and tint.
 
 To add one action button:
 
@@ -109,6 +146,20 @@ Loading returns a handle that can update the same mounted toast without replacem
 let toast = Arthur.loading("Uploading...")
 
 Arthur.update(toast, to: .success("Uploaded"))
+```
+
+The same visual overrides are available on semantic updates, preserving the
+loading toast's identity and semantic style:
+
+```swift
+Arthur.update(
+    toast,
+    to: .success(
+        "Restored",
+        systemImage: "arrow.uturn.backward.circle.fill",
+        tint: .green
+    )
+)
 ```
 
 Loading defaults to `.untilDismissed`. Updates keep the same lifecycle and original dismissal callback; stale or dismissed handles return `false` and do nothing.

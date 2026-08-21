@@ -2,10 +2,22 @@ import SwiftUI
 
 /// Installs Arthur's toast overlay. Add it once at an app root.
 public struct ArthurHost: ViewModifier {
-    @ObservedObject private var coordinator = Arthur.coordinator
-
     /// Overlays the current Arthur toast above the modified content.
     public func body(content: Content) -> some View {
+        ArthurHostView(content: content)
+    }
+}
+
+private struct ArthurHostView<Content: View>: View {
+    let content: Content
+    @StateObject private var coordinator: ArthurCoordinator
+
+    init(content: Content) {
+        self.content = content
+        _coordinator = StateObject(wrappedValue: Arthur.coordinator)
+    }
+
+    var body: some View {
         content.overlay(alignment: coordinator.configuration.position == .top ? .top : .bottom) {
             ArthurToastView(
                 toast: coordinator.currentToast,
