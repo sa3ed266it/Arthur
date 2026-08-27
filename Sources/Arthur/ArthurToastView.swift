@@ -1,5 +1,61 @@
 import SwiftUI
 
+private enum ArthurToastMetrics {
+#if os(macOS)
+    static let maxWidth: CGFloat = 300
+    static let minHeight: CGFloat = 42
+    static let horizontalPadding: CGFloat = 11
+    static let verticalPadding: CGFloat = 7
+    static let contentSpacing: CGFloat = 8
+#else
+    static let maxWidth: CGFloat = 390
+    static let minHeight: CGFloat = 56
+    static let horizontalPadding: CGFloat = 15
+    static let verticalPadding: CGFloat = 11
+    static let contentSpacing: CGFloat = 10
+#endif
+}
+
+#if os(macOS)
+private struct ArthurToastAdaptiveLayout: Layout {
+    let maxWidth: CGFloat
+
+    func sizeThatFits(
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) -> CGSize {
+        guard let subview = subviews.first else { return .zero }
+
+        let idealSize = subview.sizeThatFits(.unspecified)
+        let width = fittingWidth(for: idealSize.width, proposal: proposal)
+        let fittedSize = subview.sizeThatFits(ProposedViewSize(width: width, height: proposal.height))
+        return CGSize(width: min(fittedSize.width, maxWidth), height: fittedSize.height)
+    }
+
+    func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) {
+        guard let subview = subviews.first else { return }
+
+        let idealSize = subview.sizeThatFits(.unspecified)
+        let width = fittingWidth(for: idealSize.width, proposal: proposal)
+        subview.place(
+            at: CGPoint(x: bounds.minX, y: bounds.minY),
+            anchor: .topLeading,
+            proposal: ProposedViewSize(width: width, height: bounds.height)
+        )
+    }
+
+    private func fittingWidth(for idealWidth: CGFloat, proposal: ProposedViewSize) -> CGFloat {
+        min(idealWidth, maxWidth, proposal.width ?? maxWidth)
+    }
+}
+#endif
+
 struct ArthurToastView: View {
     let toast: ArthurToast?
     let position: ArthurPosition
@@ -114,7 +170,45 @@ struct ArthurToastView: View {
 
     @ViewBuilder
     private func toastContent(_ toast: ArthurToast) -> some View {
-        HStack(spacing: 10) {
+        toastLayout(toast)
+            .modifier(ArthurToastAccessibilityModifier(
+                hasAction: toast.actionTitle != nil,
+                announcement: toast.accessibilityAnnouncement
+            ))
+            .gesture(swipeGesture, including: swipeToDismiss ? .all : .none)
+            .allowsHitTesting(swipeToDismiss || toast.actionTitle != nil)
+    }
+
+    @ViewBuilder
+    private func toastLayout(_ toast: ArthurToast) -> some View {
+#if os(macOS)
+        if isSimpleMacToast(toast) {
+            toastRow(toast)
+                .padding(.horizontal, ArthurToastMetrics.horizontalPadding)
+                .padding(.vertical, ArthurToastMetrics.verticalPadding)
+                .frame(minHeight: ArthurToastMetrics.minHeight)
+                .fixedSize(horizontal: true, vertical: false)
+        } else {
+            ArthurToastAdaptiveLayout(
+                maxWidth: ArthurToastMetrics.maxWidth - (ArthurToastMetrics.horizontalPadding * 2)
+            ) {
+                toastRow(toast)
+            }
+                .padding(.horizontal, ArthurToastMetrics.horizontalPadding)
+                .padding(.vertical, ArthurToastMetrics.verticalPadding)
+                .frame(minHeight: ArthurToastMetrics.minHeight)
+        }
+#else
+        toastRow(toast)
+            .padding(.horizontal, ArthurToastMetrics.horizontalPadding)
+            .padding(.vertical, ArthurToastMetrics.verticalPadding)
+            .frame(minHeight: ArthurToastMetrics.minHeight)
+            .frame(maxWidth: ArthurToastMetrics.maxWidth, alignment: .leading)
+#endif
+    }
+
+    private func toastRow(_ toast: ArthurToast) -> some View {
+        HStack(spacing: ArthurToastMetrics.contentSpacing) {
             if toast.isLoading {
                 ProgressView()
                     .controlSize(.small)
@@ -126,19 +220,17 @@ struct ArthurToastView: View {
                     .accessibilityHidden(true)
             }
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(toast.title)
-                    .font(.subheadline.weight(.semibold))
-                    .lineLimit(3)
-                if let subtitle = toast.subtitle, !subtitle.isEmpty {
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(4)
-                }
+#if os(macOS)
+            if isSimpleMacToast(toast) {
+                toastText(toast)
+            } else {
+                toastText(toast)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .multilineTextAlignment(.leading)
-            .layoutPriority(1)
+#else
+            toastText(toast)
+#endif
 
             if let actionTitle = toast.actionTitle {
                 Spacer(minLength: 4)
@@ -155,17 +247,29 @@ struct ArthurToastView: View {
                 .accessibilityLabel(actionTitle)
             }
         }
-        .padding(.horizontal, 15)
-        .padding(.vertical, 11)
-        .frame(minHeight: 56)
-        .frame(maxWidth: 390, alignment: .leading)
-        .modifier(ArthurToastAccessibilityModifier(
-            hasAction: toast.actionTitle != nil,
-            announcement: toast.accessibilityAnnouncement
-        ))
-        .gesture(swipeGesture, including: swipeToDismiss ? .all : .none)
-        .allowsHitTesting(swipeToDismiss || toast.actionTitle != nil)
     }
+
+    private func toastText(_ toast: ArthurToast) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(toast.title)
+                .font(.subheadline.weight(.semibold))
+                .lineLimit(3)
+            if let subtitle = toast.subtitle, !subtitle.isEmpty {
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(4)
+            }
+        }
+        .multilineTextAlignment(.leading)
+        .layoutPriority(1)
+    }
+
+#if os(macOS)
+    private func isSimpleMacToast(_ toast: ArthurToast) -> Bool {
+        toast.actionTitle == nil && toast.subtitle?.isEmpty != false
+    }
+#endif
 
     private var swipeGesture: some Gesture {
         DragGesture(minimumDistance: 6)
